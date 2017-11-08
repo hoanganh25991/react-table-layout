@@ -1,0 +1,21 @@
+{
+  "name": "react-table-layout",
+  "description": "",
+  "main": "",
+  "authors": [
+    "Anh Le Hoang <lehoanganh25991@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "directory": "src/bower_components",
+  "dependencies": {
+    "fabric": "*"
+  }
+}
