@@ -8,16 +8,41 @@ class TableMap extends React.PureComponent {
   state = {
     fabricLoaded: false,
     canvasId: "__canvasId",
-    layoutSize: null
+    layoutSize: null,
+    fabric: null,
+    canvas: null,
   }
 
   notifyFabricLoaded = loaded => () => {
     console.log(`Fabric loaded: ${loaded}`)
     this.setState({fabricLoaded: loaded})
-    if(loaded) this.init()
+    if(loaded) {
+      this.setState({fabric: window.fabric})
+      this.initCanvas()
+    }
   }
 
-  init = () => {
+  addX = () => {
+    const {canvas, fabric} = this.state
+
+    if(!canvas || !fabric) {
+      console.log("No canvas found to add")
+      return
+    }
+
+    const circle = new fabric.Circle({ radius: 30, fill: '#f55', top: 100, left: 100 })
+
+    circle.set({
+      borderColor: 'gray',
+      cornerColor: 'black',
+      cornerSize: 12,
+      transparentCorners: true
+    });
+
+    canvas.add(circle);
+  }
+
+  initCanvas = () => {
     const {canvasId, layoutSize} = this.state
     const fabric = window.fabric
     const canvas = new fabric.Canvas(canvasId);
@@ -28,17 +53,7 @@ class TableMap extends React.PureComponent {
       canvas.setHeight(height)
     }
 
-    const circle = new fabric.Circle({ radius: 30, fill: '#f55', top: 100, left: 100 })
-
-    canvas.add(circle);
-
-    canvas.item(0).set({
-      borderColor: 'gray',
-      cornerColor: 'black',
-      cornerSize: 12,
-      transparentCorners: true
-    });
-    // canvas.setActiveObject(canvas.item(0));
+    this.setState({canvas})
   }
 
 
@@ -55,6 +70,7 @@ class TableMap extends React.PureComponent {
     return (
       <div style={s.rootDiv}>
         <div style={s.header}>TableMap</div>
+        <button onClick={this.addX}>AddX</button>
         <div style={s.layoutDiv} ref={this.storeLayoutSize}>
           <canvas id={this.state.canvasId} style={s.canvas}/>
           <Script
