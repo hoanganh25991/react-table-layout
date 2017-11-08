@@ -9,3 +9,8 @@ export const header = {
   margin: 0,
   fontSize: 18
 }
+
+export const dev = {
+  border: "1px solid black",
+  boxSizing: "border-box"
+}

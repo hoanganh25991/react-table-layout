@@ -1,7 +1,4 @@
-const dev = {
-  border: "1px solid black",
-  boxSizing: "border-box"
-}
+import { header, dev } from "../../style/common"
 
 const style = {
   rootDiv: {
@@ -9,7 +6,8 @@ const style = {
     maxWidth: 500,
     height: "100%",
     ...dev
-  }
+  },
+  header
 }
 
 export default style

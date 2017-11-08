@@ -1,7 +1,4 @@
-const dev = {
-  border: "1px solid black",
-  boxSizing: "border-box"
-}
+import { header, dev } from "../../style/common"
 
 const style = {
   rootDiv: {
@@ -10,6 +7,10 @@ const style = {
     display: "flex",
     flexDirection: "column",
     ...dev
+  },
+  header: {
+    ...header,
+    color: "red"
   },
   layoutDiv: {
     flex: 1,
