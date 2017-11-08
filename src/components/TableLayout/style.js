@@ -7,10 +7,12 @@ const style = {
   rootDiv: {
     width: "100%",
     height: "100%",
+    display: "flex",
+    flexDirection: "column",
     ...dev
   },
   layoutDiv: {
-    height: "100%",
+    flex: 1,
     display: "flex",
     flexDirection: "row"
   }
