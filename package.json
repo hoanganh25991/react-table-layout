@@ -7,6 +7,7 @@
     "react": "16.1.0-beta",
     "react-dom": "16.1.0-beta",
     "react-konva": "1.5.7-beta",
+    "react-load-script": "^0.0.6",
     "react-scripts": "1.0.17"
   },
   "devDependencies": {
