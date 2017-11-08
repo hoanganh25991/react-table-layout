@@ -14,7 +14,8 @@ const style = {
     display: "block"
   },
   canvas: {
-    ...dev
+    ...dev,
+    borderColor: "red"
   }
 }
 
