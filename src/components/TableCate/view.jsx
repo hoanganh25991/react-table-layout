@@ -2,8 +2,11 @@ import React from "react"
 import s from "./style"
 
 import Script from "react-load-script"
+import {DRAG_TO_MAP} from "./reducers";
 
 const _ = console.log
+
+const _dispatch = (...args) => _("Fake dispatch", ...args)
 
 class TableCate extends React.PureComponent {
   state = {
@@ -80,11 +83,17 @@ class TableCate extends React.PureComponent {
     const {layoutSize} = this.state
     if(!layoutSize) {_(`notifyWhenOffCanvas return, no layoutSize found`)}
 
-    const {width, height} = layoutSize
-    const {top, left, width: widthObj} = obj
+    const {width} = layoutSize
+    const {top, left, width: widthObj, scaleX} = obj
     console.log(width, left, widthObj)
-    const goOut = top < 0 || (left+widthObj)  > width
-    if(goOut) console.log("Go out", top, left)
+    const howFar = left+widthObj*scaleX
+    const goOut = top < 0 || howFar  > width
+    if(goOut) {
+      console.log("Go out", top, left)
+      const {model, dispatch = _dispatch} = this.props
+      dispatch({type: DRAG_TO_MAP, object: obj, top: top, left: (howFar-width)})
+      _(model)
+    }
     const offCanvas = left > width
     if(offCanvas) obj.remove()
   }
