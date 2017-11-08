@@ -1,0 +1,32 @@
+{
+  "name": "react-table-layout",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "konva": "^1.7.6",
+    "react": "16.1.0-beta",
+    "react-dom": "16.1.0-beta",
+    "react-konva": "1.5.7-beta",
+    "react-scripts": "1.0.17"
+  },
+   "devDependencies": {
+    "husky": "^0.14.3",
+    "lint-staged": "^4.0.0",
+    "prettier": "^1.4.4",
+    "redux-devtools-extension": "^2.13.2"
+  },
+  "scripts": {
+    "precommit": "lint-staged",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+   "lint-staged": {
+    "*.js": [
+      "prettier --write --no-semi --print-width 120",
+      "git add"
+    ]
+  },
+  "homepage": "http://pos.tinker.press"
+}
