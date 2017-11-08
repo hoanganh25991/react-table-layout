@@ -54,7 +54,39 @@ class TableCate extends React.PureComponent {
       canvas.setHeight(height)
     }
 
+    this.bindObjEvent(canvas)
+
     this.setState({canvas})
+  }
+
+  events = [
+    "object:selected",
+    "object:moving",
+  ]
+
+  callback = (options) => {
+    if(!options.target) return
+    this.notifyWhenOffCanvas(options.target)
+  }
+
+  bindObjEvent = (canvas) => {
+    this.events.map(event => {
+      canvas.on(event, this.callback)
+    })
+  }
+
+
+  notifyWhenOffCanvas = (obj) => {
+    const {layoutSize} = this.state
+    if(!layoutSize) {_(`notifyWhenOffCanvas return, no layoutSize found`)}
+
+    const {width, height} = layoutSize
+    const {top, left, width: widthObj} = obj
+    console.log(width, left, widthObj)
+    const goOut = top < 0 || (left+widthObj)  > width
+    if(goOut) console.log("Go out", top, left)
+    const offCanvas = left > width
+    if(offCanvas) obj.remove()
   }
 
 
