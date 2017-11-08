@@ -1,8 +1,10 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
-import {Layer, Stage} from 'react-konva';
+import React, { Component } from "react"
+import logo from "./logo.svg"
+import "./App.css"
+import { Layer, Stage } from "react-konva"
 import MyRect from "./components/MyRect"
+import MyImage from "./components/MyImage"
+import ResizeImage from "./components/ResizeImage"
 
 class App extends Component {
   render() {
@@ -19,11 +21,12 @@ class App extends Component {
         <Stage width={700} height={700}>
           <Layer>
             <MyRect />
+            <ResizeImage />
           </Layer>
         </Stage>
       </div>
-    );
+    )
   }
 }
 
-export default App;
+export default App
