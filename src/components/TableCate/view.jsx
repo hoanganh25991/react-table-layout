@@ -3,20 +3,47 @@ import s from "./style"
 
 import Script from "react-load-script"
 
+const _ = console.log
+
 class TableCate extends React.PureComponent {
   state = {
     fabricLoaded: false,
-    canvasId: "__canvasId2",
-    layoutSize: null
+    canvasId: "__canvasIdX",
+    layoutSize: null,
+    fabric: null,
+    canvas: null,
   }
 
   notifyFabricLoaded = loaded => () => {
     console.log(`Fabric loaded: ${loaded}`)
     this.setState({fabricLoaded: loaded})
-    if(loaded) this.init()
+    if(loaded) {
+      this.setState({fabric: window.fabric})
+      this.initCanvas()
+    }
   }
 
-  init = () => {
+  addX = (type = "Rect", option = {length: 40, width: 40, height: 40}) => () => {
+    const {canvas, fabric,layoutSize} = this.state
+
+    if(!canvas || !fabric) {
+      console.log("No canvas found to add")
+      return
+    }
+    _(canvas.size())
+    const lastRect = canvas.item(canvas.size() - 1)
+    const {length} = option;
+    const padding = 10;
+    const top = lastRect ? lastRect.top + length + padding : 0
+    const {width} = layoutSize
+    const left = (width - length)/2
+    const fill = "#555"
+    const rect = new fabric[type]({...option, top, left, fill })
+    canvas.add(rect);
+    _("rect added")
+  }
+
+  initCanvas = () => {
     const {canvasId, layoutSize} = this.state
     const fabric = window.fabric
     const canvas = new fabric.Canvas(canvasId);
@@ -27,17 +54,7 @@ class TableCate extends React.PureComponent {
       canvas.setHeight(height)
     }
 
-    const circle = new fabric.Circle({ radius: 30, fill: '#f55', top: 100, left: 100 })
-
-    canvas.add(circle);
-
-    canvas.item(0).set({
-      borderColor: 'gray',
-      cornerColor: 'black',
-      cornerSize: 12,
-      transparentCorners: true
-    });
-    // canvas.setActiveObject(canvas.item(0));
+    this.setState({canvas})
   }
 
 
@@ -54,6 +71,7 @@ class TableCate extends React.PureComponent {
     return (
       <div style={s.rootDiv}>
         <div style={s.header}>TableCate</div>
+        <button onClick={this.addX()}>AddX</button>
         <div style={s.layoutDiv} ref={this.storeLayoutSize}>
           <canvas id={this.state.canvasId} style={s.canvas}/>
           <Script
