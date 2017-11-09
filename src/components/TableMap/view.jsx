@@ -54,9 +54,11 @@ class TableMap extends React.PureComponent {
       canvas.setHeight(height)
     }
 
-    canvas.on("mouse:wheel", this.zoomWithMouseWheel)
 
-    this.setState({canvas})
+    this.setState({canvas}, () => {
+      this.pan()
+      this.zoomWithMouseWheel()
+    })
   }
 
 
@@ -130,28 +132,64 @@ class TableMap extends React.PureComponent {
   }
 
 
-
-  zoomWithMouseWheel = (options) => {
+  pan = () => {
     const {canvas, fabric} = this.state
-    _(canvas, options.e)
-    const wheelEvent =  options.e
-    _(wheelEvent.x, wheelEvent.y)
-    const {deltaY} = wheelEvent
-    const scaleZoom = 1000
-    const currZoom = canvas.getZoom()
-    const zoomRatio = currZoom + -deltaY/scaleZoom
-    const point = new fabric.Point(wheelEvent.x - canvas._offset.left, wheelEvent.y - canvas._offset.top);
-    // const point = new fabric.Point(canvas.width/2, canvas.height/2);
-    // canvas.setZoom(zoomRatio)
-    canvas.zoomToPoint(point, zoomRatio)
+    let mouseDownPoint = null;
+
+    canvas.on('mouse:down', function (options) {
+      const shouldPan = !options.target
+      if(!shouldPan) return
+      const pointer = canvas.getPointer(options.e, true);
+      mouseDownPoint = new fabric.Point(pointer.x, pointer.y);
+    });
+    canvas.on('mouse:up', function (options) {
+      mouseDownPoint = null;
+    });
+    canvas.on('mouse:move', function (options) {
+      // _("Find target", options.target)
+      const shouldPan = mouseDownPoint && !options.target
+      if(!shouldPan) return
+      const pointer = canvas.getPointer(options.e, true);
+      const mouseMovePoint = new fabric.Point(pointer.x, pointer.y);
+      canvas.relativePan(mouseMovePoint.subtract(mouseDownPoint));
+      mouseDownPoint = mouseMovePoint;
+    });
   }
 
+
+  zoomWithMouseWheel = () => {
+    const {canvas, fabric} = this.state
+    canvas.on("mouse:wheel", (options) => {
+      const wheelEvent =  options.e
+      const {deltaY} = wheelEvent
+      const currZoom = canvas.getZoom()
+      const xScale = deltaY > 0 ? 1/1.1 : 1.1
+      const zoomRatio = currZoom * xScale
+      const pointX = wheelEvent.x - canvas._offset.left
+      const pointY = wheelEvent.y - canvas._offset.top
+      const point = new fabric.Point(pointX, pointY);
+      canvas.zoomToPoint(point, zoomRatio)
+    })
+
+
+  }
+
+  notifyLoad = node => {
+    _("SCRIPT", node)
+    node.onload = () => console.log("LOADED")
+  }
+
+  loadScript = node => {
+    const s = window.document.createElement("script")
+    s.src = "https://tinker.press/abc.js"
+    node.append(s)
+  }
 
   render(){
     const url = "https://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.19/fabric.min.js"
 
     return (
-      <div style={s.rootDiv}>
+      <div style={s.rootDiv} >
         <div style={s.header}>TableMap</div>
         <button onClick={this.addX}>AddX</button>
         <div style={s.layoutDiv} ref={this.storeLayoutSize}>
