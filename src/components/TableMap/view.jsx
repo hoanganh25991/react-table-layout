@@ -58,6 +58,7 @@ class TableMap extends React.PureComponent {
     this.setState({canvas}, () => {
       this.pan()
       this.zoomWithMouseWheel()
+      this.addGridLayout()
     })
   }
 
@@ -183,6 +184,35 @@ class TableMap extends React.PureComponent {
     const s = window.document.createElement("script")
     s.src = "https://tinker.press/abc.js"
     node.append(s)
+  }
+
+  addGridLayout = () => {
+    const {canvas, fabric, layoutSize} = this.state
+    const {width, height} = layoutSize
+    const gridWidth = width; // <= you must define this with final grid width
+    const gridHeight = height; // <= you must define this with final grid height
+
+    // to manipulate grid after creation
+    // const oGridGroup = new fabric.Group([], {left: 0, top: 0});
+
+    const gridSize = 20; // define grid size
+
+// define presentation option of grid
+    const lineOption = {stroke: '#555', strokeWidth: 1, selectable:false};
+
+// do in two steps to limit the calculations
+// first loop for vertical line
+    for(let i = Math.ceil(gridWidth/gridSize); i--;){
+      canvas.add( new fabric.Line([gridSize*i, 0, gridSize*i, gridHeight], lineOption) );
+    }
+// second loop for horizontal line
+    for(let i = Math.ceil(gridHeight/gridSize); i--;){
+      canvas.add( new fabric.Line([0, gridSize*i, gridWidth, gridSize*i], lineOption) );
+    }
+// Group add to canvas
+//     canvas.add(oGridGroup);
+    _(canvas)
+    canvas.renderAll()
   }
 
   render(){
