@@ -195,31 +195,26 @@ class TableMap extends React.PureComponent {
 
     // to manipulate grid after creation
     const lineArr = []
-
     const gridSize = 20; // define grid size
-
-// define presentation option of grid
+    // define presentation option of grid
     const lineOption = {stroke: '#ebebeb', strokeWidth: 1, selectable:false, evented:false};
-
-// do in two steps to limit the calculations
-// first loop for vertical line
+    // do in two steps to limit the calculations
+    // first loop for vertical line
     for(let i = Math.ceil(gridWidth/gridSize); i--;){
       const line = new fabric.Line([gridSize*i, 0, gridSize*i, gridHeight], lineOption)
       if(i%5 === 0) line.set({stroke: "#ccc"})
       lineArr.push( line );
     }
-// second loop for horizontal line
+    // second loop for horizontal line
     for(let i = Math.ceil(gridHeight/gridSize); i--;){
       const line = new fabric.Line([0, gridSize*i, gridWidth, gridSize*i], lineOption)
       if(i%5 === 0) line.set({stroke: "#ccc"})
       lineArr.push( line);
     }
-// Group add to canvas
+    // Group add to canvas
     const oGridGroup = new fabric.Group(lineArr, {top: 0, left: 0, selectable: 0})
     oGridGroup.tag = "backgroundGrid"
     canvas.add(oGridGroup);
-    canvas.renderAll()
-    _(oGridGroup)
   }
 
   render(){
