@@ -138,7 +138,8 @@ class TableMap extends React.PureComponent {
     let mouseDownPoint = null;
 
     canvas.on('mouse:down', function (options) {
-      const shouldPan = !options.target
+      const hitBackground = options.target && options.target.tag === "backgroundGrid";
+      const shouldPan = !options.target || hitBackground
       if(!shouldPan) return
       const pointer = canvas.getPointer(options.e, true);
       mouseDownPoint = new fabric.Point(pointer.x, pointer.y);
@@ -193,23 +194,29 @@ class TableMap extends React.PureComponent {
     const gridHeight = height; // <= you must define this with final grid height
 
     // to manipulate grid after creation
-    const oGridGroup = new fabric.Group([], {left: 0, top: 0, width: gridWidth, height: gridHeight});
+    const lineArr = []
 
     const gridSize = 20; // define grid size
 
 // define presentation option of grid
-    const lineOption = {stroke: '#555', strokeWidth: 1, selectable:false, evented:false, strokeDashArray: [3, 3]};
+    const lineOption = {stroke: '#ebebeb', strokeWidth: 1, selectable:false, evented:false};
 
 // do in two steps to limit the calculations
 // first loop for vertical line
     for(let i = Math.ceil(gridWidth/gridSize); i--;){
-      oGridGroup.add( new fabric.Line([gridSize*i, 0, gridSize*i, gridHeight], lineOption) );
+      const line = new fabric.Line([gridSize*i, 0, gridSize*i, gridHeight], lineOption)
+      if(i%5 === 0) line.set({stroke: "#ccc"})
+      lineArr.push( line );
     }
 // second loop for horizontal line
     for(let i = Math.ceil(gridHeight/gridSize); i--;){
-      oGridGroup.add( new fabric.Line([0, gridSize*i, gridWidth, gridSize*i], lineOption) );
+      const line = new fabric.Line([0, gridSize*i, gridWidth, gridSize*i], lineOption)
+      if(i%5 === 0) line.set({stroke: "#ccc"})
+      lineArr.push( line);
     }
 // Group add to canvas
+    const oGridGroup = new fabric.Group(lineArr, {top: 0, left: 0, selectable: 0})
+    oGridGroup.tag = "backgroundGrid"
     canvas.add(oGridGroup);
     canvas.renderAll()
     _(oGridGroup)
