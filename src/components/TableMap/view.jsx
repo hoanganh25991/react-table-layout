@@ -12,6 +12,7 @@ class TableMap extends React.PureComponent {
     layoutSize: null,
     fabric: null,
     canvas: null,
+    enabledDrawLine: false,
   }
 
   notifyFabricLoaded = loaded => () => {
@@ -46,7 +47,9 @@ class TableMap extends React.PureComponent {
   initCanvas = () => {
     const {canvasId, layoutSize} = this.state
     const fabric = window.fabric
-    const canvas = new fabric.Canvas(canvasId);
+    const canvas = new fabric.Canvas(canvasId, {
+      selection: false
+   });
 
     if(layoutSize){
       const {width, height} = layoutSize
@@ -60,6 +63,8 @@ class TableMap extends React.PureComponent {
       this.zoomWithMouseWheel()
       this.addGridLayout()
       this.snapObj()
+      this.drawLine()
+      this.enhaceCanvasOff(canvas)
     })
   }
 
@@ -134,21 +139,19 @@ class TableMap extends React.PureComponent {
   }
 
 
-  pan = () => {
+  pan = (modeOn = true) => {
     const {canvas, fabric} = this.state
     let mouseDownPoint = null;
 
-    canvas.on('mouse:down', function (options) {
+    const mouseDownCb = (options) => {
       const hitBackground = options.target && options.target.tag === "backgroundGrid";
       const shouldPan = !options.target || hitBackground
       if(!shouldPan) return
       const pointer = canvas.getPointer(options.e, true);
       mouseDownPoint = new fabric.Point(pointer.x, pointer.y);
-    });
-    canvas.on('mouse:up', function (options) {
-      mouseDownPoint = null;
-    });
-    canvas.on('mouse:move', function (options) {
+    }
+
+    const mouseMoveCb = (options) => {
       // _("Find target", options.target)
       const shouldPan = mouseDownPoint && !options.target
       if(!shouldPan) return
@@ -156,7 +159,20 @@ class TableMap extends React.PureComponent {
       const mouseMovePoint = new fabric.Point(pointer.x, pointer.y);
       canvas.relativePan(mouseMovePoint.subtract(mouseDownPoint));
       mouseDownPoint = mouseMovePoint;
-    });
+    }
+
+    const mouseUpCb = (options) => {
+      mouseDownPoint = null;
+    }
+
+    const call = modeOn ? "on" : "off";
+    _(`Pan mode ${call}`)
+
+    canvas.set({selection: modeOn})
+
+    canvas[call]('mouse:down', mouseDownCb);
+    canvas[call]('mouse:move', mouseMoveCb);
+    canvas[call]('mouse:up', mouseUpCb);
   }
 
 
@@ -229,14 +245,104 @@ class TableMap extends React.PureComponent {
       });
     });
   }
+  
+  drawLine = (modeOn) => {
+    const {canvas, fabric} = this.state
+
+    let line, isDown;
+
+    const mouseDownCb = (options) => {
+      _(canvas)
+      _(`drawline mousedown cb`)
+      isDown = true;
+      const pointer = canvas.getPointer(options.e);
+      const points = [ pointer.x, pointer.y, pointer.x, pointer.y ];
+      line = new fabric.Line(points, {
+        strokeWidth: 5,
+        fill: 'red',
+        stroke: 'red',
+        selectable: false
+      });
+      canvas.add(line);
+    }
+
+    const mouseMoveCb = (o) => {
+      _(`drawline mousemove cb`)
+      if (!isDown) return;
+      const pointer = canvas.getPointer(o.e);
+      line.set({ x2: pointer.x, y2: pointer.y });
+      canvas.renderAll();
+    }
+
+    const mouseUpCb = (o) => {
+      _(`drawline mouseup cb`)
+      isDown = false;
+    }
+
+    const call = modeOn ? "on" : "off";
+    _(`Draw line ${call}`)
+    _(canvas, call, mouseMoveCb)
+
+    canvas[call]('mouse:down', mouseDownCb);
+    canvas[call]('mouse:move', mouseMoveCb);
+    canvas[call]('mouse:up', mouseUpCb);
+  }
+
+  toogleDrawLineMode = () => {
+    const {enabledDrawLine: curr} = this.state
+    const enabledDrawLine = !curr
+    this.setState({enabledDrawLine}, () => {
+      _(enabledDrawLine)
+      this.drawLine(enabledDrawLine)
+      this.pan(!enabledDrawLine)
+    })
+  }
+
+  enhaceCanvasOff = canvas => {
+    _("enhance canvas off")
+    const oOff = canvas.off
+    canvas.off = function(eventName, eventHandler = null){
+      if(!eventHandler) {
+        oOff(eventName)
+        return
+      }
+      const listeners = canvas.__eventListeners[eventName]
+     const next = listeners.filter(listener => listener.toString() !== eventHandler.toString())
+      canvas.__eventListeners[eventName] = next
+    }
+  }
+
+  makeCircle = (left, top, line1, line2, line3, line4) => {
+    const {canvas, fabric} = this.state
+    const c = new fabric.Circle({
+      left: left,
+      top: top,
+      strokeWidth: 5,
+      radius: 12,
+      fill: '#fff',
+      stroke: '#666'
+    });
+
+    c.hasControls = c.hasBorders = false;
+
+    c.line1 = line1;
+    c.line2 = line2;
+    c.line3 = line3;
+    c.line4 = line4;
+
+    return c;
+  }
 
   render(){
     const url = "https://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.19/fabric.min.js"
+    // const url = "https://cdnjs.cloudflare.com/ajax/libs/fabric.js/2.0.0-beta.7/fabric.min.js"
+    ///
 
     return (
       <div style={s.rootDiv} >
         <div style={s.header}>TableMap</div>
         <button onClick={this.addX}>AddX</button>
+        <button onClick={this.toogleDrawLineMode}>Toogle Draw Line</button>
         <div style={s.layoutDiv} ref={this.storeLayoutSize}>
           <canvas id={this.state.canvasId} style={s.canvas}/>
           <Script
