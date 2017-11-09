@@ -193,26 +193,26 @@ class TableMap extends React.PureComponent {
     const gridHeight = height; // <= you must define this with final grid height
 
     // to manipulate grid after creation
-    // const oGridGroup = new fabric.Group([], {left: 0, top: 0});
+    const oGridGroup = new fabric.Group([], {left: 0, top: 0, width: gridWidth, height: gridHeight});
 
     const gridSize = 20; // define grid size
 
 // define presentation option of grid
-    const lineOption = {stroke: '#555', strokeWidth: 1, selectable:false};
+    const lineOption = {stroke: '#555', strokeWidth: 1, selectable:false, evented:false, strokeDashArray: [3, 3]};
 
 // do in two steps to limit the calculations
 // first loop for vertical line
     for(let i = Math.ceil(gridWidth/gridSize); i--;){
-      canvas.add( new fabric.Line([gridSize*i, 0, gridSize*i, gridHeight], lineOption) );
+      oGridGroup.add( new fabric.Line([gridSize*i, 0, gridSize*i, gridHeight], lineOption) );
     }
 // second loop for horizontal line
     for(let i = Math.ceil(gridHeight/gridSize); i--;){
-      canvas.add( new fabric.Line([0, gridSize*i, gridWidth, gridSize*i], lineOption) );
+      oGridGroup.add( new fabric.Line([0, gridSize*i, gridWidth, gridSize*i], lineOption) );
     }
 // Group add to canvas
-//     canvas.add(oGridGroup);
-    _(canvas)
+    canvas.add(oGridGroup);
     canvas.renderAll()
+    _(oGridGroup)
   }
 
   render(){
