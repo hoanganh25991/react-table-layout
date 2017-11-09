@@ -124,7 +124,10 @@ class TableCate extends React.PureComponent {
   }
 
   handleComputeDelta = (e) => {
-    const {clientX, clientY, target} = e
+    const nativeE = e.nativeEvent
+    const eX = nativeE instanceof TouchEvent ? nativeE.changedTouches[0] : nativeE
+    _(eX)
+    const {clientX, clientY, target} = eX
     const {top, left} = target.getBoundingClientRect()
     const deltaX = left - clientX;
     const deltaY = top - clientY;
@@ -143,9 +146,12 @@ class TableCate extends React.PureComponent {
     // const x = e.clientX - (offset.left + imageOffsetX);
     // const y = e.clientY - (offset.top + imageOffsetY);
 
-    _(e.clientX, e.clientY, e.target)
+    _(e.nativeEvent, e.clientX, e.clientY, e.target)
+    const nativeE = e.nativeEvent
+    const eX = nativeE instanceof TouchEvent ? nativeE.changedTouches[0] : nativeE
+    _(eX)
     const {deltaX, deltaY} = this.state
-    const {clientY, clientX, target} = e
+    const {clientY, clientX, target} = eX
     const {dispatch = _dispatch} = this.props
     dispatch({type: DROP_IMG, top: clientY + deltaY, left: clientX + deltaX, target})
   }
@@ -163,7 +169,7 @@ class TableCate extends React.PureComponent {
         <div style={s.layoutDiv} ref={this.storeLayoutSize}>
           {sampleCates && sampleCates.map(({name, img}) => (
             <div key={name}>
-              <img src={img} style={s.sampleCate} onDragEnd={this.handleDragEvent} onDragStart={this.handleComputeDelta}/>
+              <img src={img} style={s.sampleCate} onDragEnd={this.handleDragEvent} onDragStart={this.handleComputeDelta} onTouchStart={this.handleComputeDelta} onTouchEnd={this.handleDragEvent}/>
             </div>
           ))}
           {/*<canvas id={this.state.canvasId} style={s.canvas}/>*/}
