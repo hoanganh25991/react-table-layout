@@ -3,6 +3,7 @@ import s from "./style"
 
 import Script from "react-load-script"
 
+const _ = console.log
 
 class TableMap extends React.PureComponent {
   state = {
@@ -61,6 +62,41 @@ class TableMap extends React.PureComponent {
     if(!node) return
     const {width, height} = node.getBoundingClientRect()
     this.setState({layoutSize: {width, height}})
+  }
+
+
+  mem = []
+
+  checkExist = (object) => {
+    const objClone = this.mem.filter(objClone => objClone.origin === object)[0]
+    return objClone
+  }
+
+  componentWillReceiveProps(nextProps){
+    const {model, dispatch} = this.props
+    const {canvas, fabric} = this.state
+    const tableCateUpdated = model.tableCate !== nextProps.model.tableCate
+
+    if(tableCateUpdated){
+      _(nextProps.model)
+      const {object, top, left} = nextProps.model.tableCate
+      const exist = this.checkExist(object)
+      const {width, height, scaleX, scaleY, fill} = object
+      const objClone = Boolean(exist) ? exist : new fabric.Rect({width, height, scaleX, scaleY, fill} )
+      objClone.origin = object
+      objClone.top = top;
+      objClone.left = left
+      if(exist) {
+        // canvas.add(objClone)
+        // canvas.renderAll()
+      }else {
+        this.mem.push(objClone)
+        canvas.add(objClone)
+      }
+      // canvas.setActiveObject(objClone)
+      canvas.renderAll()
+    }
+
   }
 
 

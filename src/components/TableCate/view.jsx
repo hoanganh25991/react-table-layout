@@ -91,11 +91,14 @@ class TableCate extends React.PureComponent {
     if(goOut) {
       console.log("Go out", top, left)
       const {model, dispatch = _dispatch} = this.props
-      dispatch({type: DRAG_TO_MAP, object: obj, top: top, left: (howFar-width)})
-      _(model)
+      dispatch({type: DRAG_TO_MAP, object: obj, top: top, left: (left-width)})
     }
     const offCanvas = left > width
-    if(offCanvas) obj.remove()
+    if(offCanvas) {
+      _("object off canvas, remove it")
+      obj.remove()
+      // dispatch()
+    }
   }
 
 
