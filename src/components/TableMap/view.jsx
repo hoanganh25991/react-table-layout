@@ -59,6 +59,7 @@ class TableMap extends React.PureComponent {
       this.pan()
       this.zoomWithMouseWheel()
       this.addGridLayout()
+      this.snapObj()
     })
   }
 
@@ -181,11 +182,11 @@ class TableMap extends React.PureComponent {
     node.onload = () => console.log("LOADED")
   }
 
-  loadScript = node => {
-    const s = window.document.createElement("script")
-    s.src = "https://tinker.press/abc.js"
-    node.append(s)
-  }
+  // loadScript = node => {
+  //   const s = window.document.createElement("script")
+  //   s.src = "https://tinker.press/abc.js"
+  //   node.append(s)
+  // }
 
   addGridLayout = () => {
     const {canvas, fabric, layoutSize} = this.state
@@ -215,6 +216,18 @@ class TableMap extends React.PureComponent {
     const oGridGroup = new fabric.Group(lineArr, {top: 0, left: 0, selectable: 0})
     oGridGroup.tag = "backgroundGrid"
     canvas.add(oGridGroup);
+  }
+
+  snapObj = () => {
+    const grid = 20;
+    // snap to grid
+    const {canvas} = this.state
+    canvas.on('object:moving', function(options) {
+      options.target.set({
+        left: Math.round(options.target.left / grid) * grid,
+        top: Math.round(options.target.top / grid) * grid
+      });
+    });
   }
 
   render(){
