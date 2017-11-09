@@ -93,8 +93,8 @@ class TableMap extends React.PureComponent {
         this.mem.push(objClone)
         canvas.add(objClone)
       }
-      // canvas.setActiveObject(objClone)
       canvas.renderAll()
+      objClone.setCoords()
     }
 
   }

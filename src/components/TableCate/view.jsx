@@ -43,6 +43,7 @@ class TableCate extends React.PureComponent {
     const fill = "#555"
     const rect = new fabric[type]({...option, top, left, fill })
     canvas.add(rect);
+    canvas.setActiveObject(rect)
     _("rect added")
   }
 
@@ -80,7 +81,7 @@ class TableCate extends React.PureComponent {
 
 
   notifyWhenOffCanvas = (obj) => {
-    const {layoutSize} = this.state
+    const {layoutSize, canvas} = this.state
     if(!layoutSize) {_(`notifyWhenOffCanvas return, no layoutSize found`)}
 
     const {width} = layoutSize
@@ -98,6 +99,7 @@ class TableCate extends React.PureComponent {
       _("object off canvas, remove it")
       obj.remove()
       // dispatch()
+      // canvas.remove(obj)
     }
   }
 
