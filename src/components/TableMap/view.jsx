@@ -54,6 +54,8 @@ class TableMap extends React.PureComponent {
       canvas.setHeight(height)
     }
 
+    canvas.on("mouse:wheel", this.zoomWithMouseWheel)
+
     this.setState({canvas})
   }
 
@@ -125,6 +127,23 @@ class TableMap extends React.PureComponent {
   componentWillReceiveProps(nextProps){
     // this.hanldeDragDropFabricObj(nextProps)
     this.handleDragDropImg(nextProps)
+  }
+
+
+
+  zoomWithMouseWheel = (options) => {
+    const {canvas, fabric} = this.state
+    _(canvas, options.e)
+    const wheelEvent =  options.e
+    _(wheelEvent.x, wheelEvent.y)
+    const {deltaY} = wheelEvent
+    const scaleZoom = 1000
+    const currZoom = canvas.getZoom()
+    const zoomRatio = currZoom + -deltaY/scaleZoom
+    const point = new fabric.Point(wheelEvent.x - canvas._offset.left, wheelEvent.y - canvas._offset.top);
+    // const point = new fabric.Point(canvas.width/2, canvas.height/2);
+    // canvas.setZoom(zoomRatio)
+    canvas.zoomToPoint(point, zoomRatio)
   }
 
 
