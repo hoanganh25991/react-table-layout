@@ -2,7 +2,10 @@ import React from "react"
 import s from "./style"
 
 import Script from "react-load-script"
-import {DRAG_TO_MAP} from "./reducers";
+import {DRAG_TO_MAP, DROP_IMG} from "./reducers";
+
+import tableImg from "../../asset/table.png"
+import Draggable from 'react-draggable';
 
 const _ = console.log
 
@@ -15,6 +18,7 @@ class TableCate extends React.PureComponent {
     layoutSize: null,
     fabric: null,
     canvas: null,
+    sampleCates: null,
   }
 
   notifyFabricLoaded = loaded => () => {
@@ -110,8 +114,46 @@ class TableCate extends React.PureComponent {
     this.setState({layoutSize: {width, height}})
   }
 
+  availableImgs = ["table.png", "chair.png", "chair-2.png", "chair-2-v2.png"]
+
+  componentDidMount(){
+    const loadImgsWait = Promise.all(this.availableImgs.map(imgName => {
+      return import(`../../asset/${imgName}`).then(img => ({name: imgName, img}))
+    }))
+    loadImgsWait.then(sampleCates => this.setState({sampleCates}))
+  }
+
+  handleComputeDelta = (e) => {
+    const {clientX, clientY, target} = e
+    const {top, left} = target.getBoundingClientRect()
+    const deltaX = left - clientX;
+    const deltaY = top - clientY;
+    this.setState({deltaX, deltaY})
+  }
+
+  handleDragEvent = (e, data) => {
+    // type DraggableData = {
+    //   node: HTMLElement,
+    //   // lastX + deltaX === x
+    //   x: number, y: number,
+    //   deltaX: number, deltaY: number,
+    // };
+    //   lastX: number, lastY: number
+
+    // const x = e.clientX - (offset.left + imageOffsetX);
+    // const y = e.clientY - (offset.top + imageOffsetY);
+
+    _(e.clientX, e.clientY, e.target)
+    const {deltaX, deltaY} = this.state
+    const {clientY, clientX, target} = e
+    const {dispatch = _dispatch} = this.props
+    dispatch({type: DROP_IMG, top: clientY + deltaY, left: clientX + deltaX, target})
+  }
+
+
 
   render(){
+    const {sampleCates} = this.state
     const url = "https://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.19/fabric.min.js"
 
     return (
@@ -119,12 +161,17 @@ class TableCate extends React.PureComponent {
         <div style={s.header}>TableCate</div>
         <button onClick={this.addX()}>AddX</button>
         <div style={s.layoutDiv} ref={this.storeLayoutSize}>
-          <canvas id={this.state.canvasId} style={s.canvas}/>
-          <Script
-            url={url}
-            onLoad={this.notifyFabricLoaded(true)}
-            onError={this.notifyFabricLoaded(false)}
-          />
+          {sampleCates && sampleCates.map(({name, img}) => (
+            <div key={name}>
+              <img src={img} style={s.sampleCate} onDragEnd={this.handleDragEvent} onDragStart={this.handleComputeDelta}/>
+            </div>
+          ))}
+          {/*<canvas id={this.state.canvasId} style={s.canvas}/>*/}
+          {/*<Script*/}
+            {/*url={url}*/}
+            {/*onLoad={this.notifyFabricLoaded(true)}*/}
+            {/*onError={this.notifyFabricLoaded(false)}*/}
+          {/*/>*/}
         </div>
       </div>
     )

@@ -12,10 +12,20 @@ const style = {
   layoutDiv: {
     flex: 1,
     display: "block"
+    // display: "flex",
+    // flexDirection: "row",
+    // flexWrap: "wrap",
+    // alignItems: "center",
+    // justifyContent: "center"
   },
   canvas: {
     ...dev,
     borderColor: "red"
+  },
+  sampleCate: {
+    height: 70,
+    draggable: true,
+    display: "block"
   }
 }
 

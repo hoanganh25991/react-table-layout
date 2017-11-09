@@ -72,7 +72,7 @@ class TableMap extends React.PureComponent {
     return objClone
   }
 
-  componentWillReceiveProps(nextProps){
+  hanldeDragDropFabricObj = (nextProps) => {
     const {model, dispatch} = this.props
     const {canvas, fabric} = this.state
     const tableCateUpdated = model.tableCate !== nextProps.model.tableCate
@@ -96,7 +96,35 @@ class TableMap extends React.PureComponent {
       canvas.renderAll()
       objClone.setCoords()
     }
+  }
 
+  handleDragDropImg = (nextProps) => {
+    const {model, dispatch} = this.props
+    const {canvas, fabric} = this.state
+    const tableCateUpdated = model.tableCate !== nextProps.model.tableCate
+
+    if(!tableCateUpdated) return
+    const {target, top: clientY, left: clientX} = nextProps.model.tableCate
+
+    const {width, height} = target
+
+    const top = clientY - canvas._offset.top
+    const left = clientX - canvas._offset.left
+
+    _(target)
+
+    const newImage = new fabric.Image(target, {
+      width,
+      height,
+      left,
+      top
+    });
+    canvas.add(newImage);
+  }
+
+  componentWillReceiveProps(nextProps){
+    // this.hanldeDragDropFabricObj(nextProps)
+    this.handleDragDropImg(nextProps)
   }
 
 
